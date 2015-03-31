@@ -1,0 +1,263 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tree Example</title>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<style>
+    div.container.json-form {
+	    margin-right: 0px;
+        margin-left: 0px;
+        background-color:#E3E3E3;
+        padding-bottom: 30px;		
+	}
+	
+	.small-json-form {
+	    display : block;
+	}
+	
+	.h1-json-form small{
+	    font-size : 20%;
+        text-align: right;
+        color: white;		
+	}
+	
+	.h1-json-form {
+	    font-size : 50px;
+		font-weight: bold;
+	}
+	
+	.head-json-form{
+        background-color: #252946;
+		color: white;
+	}
+	
+	.body-json-form {
+	    
+		margin-top : 10px;
+	}
+	
+	.row-json-form {
+	   background-color:white;
+       margin-top: 20px;
+       border-radius: 4px;
+       	   
+	}
+	
+	.row-json-sub {
+	    border: solid 1px;
+	}
+	
+	.row-json-form-round {
+	    margin-right: -25px;
+		margin-left: -25px;
+	}
+	
+    .json-form-display-area {
+	    margin-top: 30px;
+	}
+	
+	div.json-form-display-area div.right {
+	    background-color : white;
+		border-radius: 5px;
+		float: right;
+		width: 40%
+		
+	}
+	
+	div.json-form-display-area div.left {
+	    background-color : white;
+		border-radius: 5px;
+		float: left;
+		width: 55%;
+		
+	}
+	
+	div.json-form-display-area div.left iframe { 
+	    position: absolute;
+		top: 0; 
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+	
+	.json-form-display-area div.inner {
+	    margin: 10px;
+		border: 1px solid;
+		border-color : #E3E3E3;
+		border-radius: 5px;
+		
+		position: relative;
+		
+		padding-bottom: 60%;
+        
+	}
+	
+    .json-form-display-area:after{
+        clear:both;
+	}
+	
+	.triangle-bottom-right {
+	    width: 0;
+		height: 0;
+		border-bottom: 8px solid #656565;
+		border-left: 8px solid transparent;
+	}
+	
+	.triangle-right {
+	    width: 0;
+		height: 0;
+		border-top: 8px solid transparent;
+	    border-left: 8px solid #656565;
+	    border-bottom: 8px solid transparent;
+	}
+	.tree-title {
+	    vertical-align: middle;
+	}
+	
+	.tree_title_content {
+	    margin-left: 5px;
+	}
+	
+	#tree_view {
+	    background-color : white;
+	}
+	
+	#tree_view ul.nav ul {
+	    background: url(vline.png) repeat-y;
+        margin: 0;
+        padding: 0;
+		list-style-type: none;
+	}
+	#tree_view ul {
+     margin-left: 10px;
+    }
+	
+	#tree_view ul.nav ul  li {
+     margin: 0;
+     padding: 0 12px;
+	 line-height: 20px;
+     background: url(node.png) no-repeat;
+   }
+   
+   #tree_view ul.nav ul li:last-child {
+     background: white url(lastnode.png) no-repeat;
+   }
+	
+	/*
+	#tree_view ul {
+     margin-left: 10px;
+    }
+
+    #tree_view  li {
+     margin: 0;
+     padding: 0 12px;
+	 line-height: 20px;
+     background: url(node.png) no-repeat;
+   }
+   */
+  
+}
+</style>
+    
+</head>
+<body>
+
+<div class="container json-form">
+    Put an URL here 
+    <div class="row body-json-form">
+		<div class="col-xs-12">	
+				
+			<div class="input-group  input-group-lg">
+				<input name="jsonURL" id="jsonURL" type="text" value="" class="form-control" />
+				<span class="input-group-btn">
+					<button  class="btn btn-search" type="button" id="ok_button">OK</button>
+				</span>
+			</div>	
+				
+		</div>
+    </div>
+	
+	<div class="json-form-display-area">
+	    <div class="left">
+		    <div class="inner">
+		        <iframe id="iframe-show"   frameborder="0" ></iframe>
+			</div>
+		</div>
+        <div class="right" >
+		    <div class="inner well" id="tree_view">
+		        
+			</div>
+		</div>		
+	</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script type="text/javascript">
+
+    (function($){
+	    $(document).ready(function() {
+		    $("#ok_button").on("click",function(){
+			    var iframe = $("#iframe-show")
+				var url = $("#jsonURL").val();
+                var serverUrl = "/php/job_interview/my_test.php";
+				var serverData = {"url":url};
+				iframe.attr("src",url);
+                //post to back end to fetch json content.
+				
+				
+				$.ajax
+				({
+					type: "POST",
+					//the url where you want to sent the userName and password to
+					url: serverUrl,
+					dataType: 'json',
+					//json object to sent to the authentication url
+					data: serverData,
+					success: function (data) {
+                        var html = json2Tree(data);
+						html = "<ul class='nav'>" + html + "</ul>";
+                        $("#tree_view").html(html);
+                        $(".tree-title").click(function () {
+							$(this).parent().children('ul').toggle(100);
+							var c = $(this).parent().children('ul');
+							if (c.lenght > 0) {
+								if( $(this).hasClass('triangle-bottom-right') ) {
+									$(this).removeClass('triangle-bottom-right');
+									$(this).addClass('triangle-right');
+								} else if ($(this).hasClass('triangle-right')) {
+									$(this).removeClass('triangle-right');
+									$(this).addClass('triangle-bottom-right');
+								}
+							}
+						});	
+					}
+				})
+                
+			});
+
+            function json2Tree(json) {
+			    var str = "";
+				for(var x in json) {
+				    if (json[x] === null) continue;
+				    str += "<li>"; 
+				    if (typeof json[x].child_nodes !== 'undefined' || typeof json[x] === 'object') {
+					    str += '<span  class="tree-title"><span class="glyphicon  triangle-bottom-right"></span><span class="tree_title_content">' + x + '</span></span>';
+						if (typeof json[x].child_nodes !== 'undefined') {
+					        str += "<ul>"; 
+					        str += json2Tree(json[x].child_nodes);
+                            str += "</ul>";
+						}						
+					} else {
+					    str += json[x];   
+					}
+					str += "</li>";
+				}
+				return str;
+			}			
+		});
+	})(jQuery);
+</script>
+</body>
+</html>
