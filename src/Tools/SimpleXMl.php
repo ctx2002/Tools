@@ -4,9 +4,9 @@ namespace Tools;
 class SimpleXMl 
 {
     private $root;
-    public function __construct($rootName)
+    public function __construct($rootName,$ns="")
     {
-        $this->root = new \SimpleXMLElement("<".$rootName."></".$rootName.">");
+        $this->root = new \SimpleXMLElement("<".$rootName." ".$ns."></".$rootName.">");
     }
     
     public function getRoot()
@@ -19,15 +19,15 @@ class SimpleXMl
         return $this->root->xpath('..');
     }
     
-    public function setElementAttribute($key,$value)
+    public function setElementAttribute($key,$value,$namespace=null)
     {
-        $this->root->addAttribute($key,$value);
+        $this->root->addAttribute($key, $value, $namespace);
         return $this;
     }
     
-    public function setElement($name,$value = null)
+    public function setElement($name,$value = null,$namespace=null)
     {
-        $this->root = $this->root->addChild($name, $value);
+        $this->root = $this->root->addChild($name, $value,$namespace);
         return $this;
     }
     
@@ -46,17 +46,16 @@ class SimpleXMl
 }
 
 /*
-$xml = new MyXMLTree("root");
+$xml = new SimpleXML("root",'xmlns:android="http://schemas.android.com/apk/res/android"');
 $xml->setElementAttribute("version", "1.0.0")
         ->setElement("cars")
-            ->setElement("honda")->setElementAttribute("id", 1)
-                ->setElement("Colour" , "red")->end()
+            ->setElement("honda")->setElementAttribute("android:id", 1,"http://schemas.android.com/apk/res/android")
+                ->setElement("Colour" , "red","http://schemas.android.com/apk/res/android")->end()
             ->end()
             ->setElement("Volvo")->setElementAttribute("id", 1)
                 ->setElement("Colour" , "red")->end()
             ->end()
         ->end();
-//echo $xml->getRoot()->asXML();
 echo $xml->toXML();
  * */
  
