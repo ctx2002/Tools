@@ -59,4 +59,21 @@ class StringTest extends \PHPUnit_Framework_TestCase
         $v = $obj->endWith("45");
         $this->assertTrue($v);
     }
+    
+    public function testReplace()
+    {
+        $obj = new String("abcd fgh");
+        $re = "aa";
+        $newStr = $obj->replace("/cd/ism", $re);
+        
+        $this->assertEquals($newStr->__toString(), "abaa fgh");    
+    }
+    
+    public function testEqualsIgnoreCase()
+    {
+        $obj = new String("abcd fgh");
+        $obj2 = new String("ABCD FGH");
+        $isEqual = $obj->equalsIgnoreCase($obj2);
+        $this->assertTrue($isEqual);
+    }
 }

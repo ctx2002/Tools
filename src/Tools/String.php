@@ -41,9 +41,19 @@ class String {
         }
     }
 
-    public function equalsIgnoreCase($other)
+    public function equalsIgnoreCase(String $other)
     {
-        return strncasecmp($this->id, $other, strlen($this->id));
+        
+        $bool = false;
+        $result = strncasecmp($this->__toString(), 
+                $other->__toString(), 
+                strlen($this->__toString()));
+        
+        if (0 === $result) {
+            $bool = true;
+        }
+        
+        return $bool;
     }
     
     public function concat(\Tools\String $str)
