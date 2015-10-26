@@ -90,6 +90,13 @@ class String {
         $str = trim($this->__toString() , $character_mask);
         return new \Tools\String( $str );    
     }
+    
+    public function removeLeadChar($str)
+    {
+        if ($str == '') return '';
+	$str[0] = ' ';
+	return ltrim($str);
+    }
 
     public function __toString() {
         return $this->id;
