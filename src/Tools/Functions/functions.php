@@ -1,6 +1,17 @@
 <?php
 namespace Tools\Functions;
 
+/**
+ * this function has same interface as filter_var_array,
+ * but you can supply nested array as data and definition.
+ * 
+ * @link http://php.net/manual/en/function.filter-var-array.php
+ * 
+ * 
+ * @param array $data same as filter_var_array first argument
+ * @param array $args same as filter_var_array second argument
+ * @param boolean $add_empty same as filter_var_array third argument
+ * **/
 function filter_vals($data, $args, $add_empty = true)
  {
 	$result = null;
