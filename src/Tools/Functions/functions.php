@@ -19,7 +19,7 @@ function filter_vals($data, $args, $add_empty = true)
        
         if (is_array($value)) {
             if (!isset($value['filter'])) {
-                $result[$key] = my_print_1($value, $data[$key]);
+                $result[$key] = filter_vals($value, $data[$key], $add_empty);
             } else {
                 $result[$key] = extractValue($key, $data, $value, $add_empty);
             }
