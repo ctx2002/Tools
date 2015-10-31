@@ -52,7 +52,7 @@ function extractValue($key, $data, $value, $add_empty)
     'testscalar'    => array( "test_test" => array('2', '23', '10', '12')),
     'testarray'     => '2',
 	'data' => array(
-	    "name" => array("first" => "anru", "last" => "chen")
+	    "name" => array("first" => "mike", "last" => "gru")
 	),
 	
 	'test1' => array(
