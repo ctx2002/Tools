@@ -1,7 +1,8 @@
 {
     "autoload": {
         "psr-0": {
-            "Tools\\":        "src/"
+            "Tools\\":        "src/",
+            "files": ["src/Functions/functions.php"]
         }
     }
 }
