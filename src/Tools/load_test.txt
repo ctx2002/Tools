@@ -1,0 +1,92 @@
+# this is a script to seed data base.
+# only used on your local development machine.
+# here is how to use it: 
+# mysql --local-infile -u homestead -psecret < load_test.txt
+USE  oneroom_analytic;
+
+SET @@session.sql_log_bin=0;
+SET FOREIGN_KEY_CHECKS = 0;
+SET UNIQUE_CHECKS = 0;
+SET autocommit=0;
+
+DELETE FROM analytic_users;
+ALTER TABLE analytic_users AUTO_INCREMENT = 5;
+
+ALTER TABLE analytic_users ADD COLUMN `my_link` bigint(20) NOT NULL AFTER `ip4`;
+alter table analytic_users add unique index my_link_index (my_link);
+
+
+
+LOAD DATA LOCAL INFILE '/vagrant/oneroom-analytic/analytic_user.csv' 
+     INTO TABLE analytic_users FIELDS TERMINATED BY '\t' 
+     LINES TERMINATED BY '\n' 
+    (uuid,`ip4`, `my_link` ,`language`, event_id,venue_id,expected_watch_time,created_at,updated_at,event_code,event_type);
+
+
+DROP TABLE IF EXISTS temp_analytic_users_actions;
+CREATE TABLE `temp_analytic_users_actions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `my_link` bigint(20),
+  `analytic_user_id` bigint(20) unsigned NOT NULL,
+  `action` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `start_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `end_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `camer_from` smallint(6) NOT NULL,
+  `camer_to` smallint(6) NOT NULL,
+  `browser` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
+  `device` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
+  `status` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'n',
+  `seconds` bigint(20) unsigned default 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+DELETE FROM temp_analytic_users_actions;
+DELETE FROM analytic_users_actions;
+ALTER TABLE analytic_users_actions AUTO_INCREMENT = 5;
+alter table temp_analytic_users_actions add index my_link_u_k_temp (my_link);
+
+
+LOAD DATA LOCAL INFILE '/vagrant/oneroom-analytic/analytic_user_action.csv' 
+     INTO TABLE temp_analytic_users_actions FIELDS TERMINATED BY '\t' 
+     LINES TERMINATED BY '\n' 
+    (my_link,`action`, start_at,end_at, `seconds` ,camer_from,camer_to,browser,device,status);
+
+#UPDATE temp_analytic_users_actions JOIN analytic_users ON (temp_analytic_users_actions.uuid = analytic_users.uuid)
+#SET temp_analytic_users_actions.analytic_user_id = analytic_users.id;
+
+#INSERT INTO analytic_users_actions (analytic_user_id, `action`, start_at, camer,browser,device,status)
+#    SELECT temp_analytic_users_actions.analytic_user_id, 
+#           temp_analytic_users_actions.`action`, 
+#           temp_analytic_users_actions.start_at,
+#           temp_analytic_users_actions.camer,
+#           temp_analytic_users_actions.browser,
+#           temp_analytic_users_actions.device,
+#           temp_analytic_users_actions.status
+#    FROM temp_analytic_users_actions;
+
+INSERT INTO analytic_users_actions (analytic_user_id, `action`, start_at,end_at,`seconds`,
+                  camer_from,camer_to,browser,device,status)
+    SELECT analytic_users.id, 
+           temp_analytic_users_actions.`action`, 
+           temp_analytic_users_actions.start_at,
+           temp_analytic_users_actions.end_at,
+           temp_analytic_users_actions.seconds,
+           temp_analytic_users_actions.camer_from,
+           temp_analytic_users_actions.camer_to,
+           temp_analytic_users_actions.browser,
+           temp_analytic_users_actions.device,
+           temp_analytic_users_actions.status
+    FROM temp_analytic_users_actions, analytic_users
+    WHERE temp_analytic_users_actions.my_link = analytic_users.my_link;
+
+DROP TABLE temp_analytic_users_actions;
+
+SET UNIQUE_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS = 1;
+
+ALTER TABLE analytic_users DROP INDEX my_link_index;
+ALTER TABLE analytic_users DROP COLUMN my_link;
+
+
+COMMIT;
