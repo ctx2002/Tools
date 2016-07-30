@@ -1,6 +1,6 @@
 <?php
 namespace Tools;
-class String {
+class AString {
     private $id;
 
     public function __construct($value) 
@@ -41,7 +41,7 @@ class String {
         }
     }
 
-    public function equalsIgnoreCase(String $other)
+    public function equalsIgnoreCase(AString $other)
     {
         
         $bool = false;
@@ -56,12 +56,12 @@ class String {
         return $bool;
     }
     
-    public function concat(\Tools\String $str)
+    public function concat(AString $str)
     {
-        return new \Tools\String($this->id . $str->__toString());    
+        return new AString($this->id . $str->__toString());
     }
     
-    public function contains(\Tools\String $str)
+    public function contains(AString $str)
     {
         return strpos($this->id, $str->__toString());    
     }
@@ -70,32 +70,36 @@ class String {
     {
         return preg_match($regex, $this->id);
     }
-    
+
     /**
-     * @param string|array $regex 
+     * @param string|array $regex
      * @param string|array $replacement
-     **/
+     *
+     * @return AString
+     */
     public function replace($regex,$replacement)
     {
         $str = preg_replace($regex, $replacement, $this->__toString());
-        return new \Tools\String($str);
+        return new AString($str);
     }
-    
+
     /**
-     * $param string $mask Simply list all characters that 
+     * $param string $mask Simply list all characters that
      *  you want to be stripped. With .. you can specify a range of characters
-     **/
+     * @param string $mask
+     * @return AString
+     */
     public function trim($mask = " \t\n\r\0\x0B")
     {
-        $str = trim($this->__toString() , $character_mask);
-        return new \Tools\String( $str );    
+        $str = trim($this->__toString() , $mask);
+        return new AString( $str );
     }
     
     public function removeLeadChar($str)
     {
         if ($str == '') return '';
-	$str[0] = ' ';
-	return ltrim($str);
+        $str[0] = ' ';
+        return ltrim($str);
     }
 
     public function __toString() {
