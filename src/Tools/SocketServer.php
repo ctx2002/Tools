@@ -93,3 +93,13 @@ class SocketServer
     }
 
 }
+
+/**
+$response = function($input)
+{
+return "input is: " . $input . "\n";
+};
+
+$server = new SocketServer("127.0.0.1", 5789);
+$server->run($response);
+ ****/
