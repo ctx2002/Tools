@@ -79,6 +79,8 @@ function evaluate($expr, $obj)
 		return $value1 || $value2;
 	} else if ($op == '!=') {
 		return $value1 != $value;
+	} else if ($op instanceof Closure) {
+		return $op($value1, $value2);
 	}
 }
 
@@ -118,6 +120,11 @@ class ExprBuilder
 		return $this->compareX($expr1, $expr2, "or");
 	}
 	
+	public function customX($expr1, $expr2, Closure $op)
+	{
+		return $this->compareX($expr1, $expr2, $op);
+	}
+	
 	protected function compareX($expr1, $expr2, $op)
 	{
 		$expr = new Expr();
@@ -128,42 +135,50 @@ class ExprBuilder
 	}
 }
 
-class A
-{	
-	public $name;
-	public $tel;
-	
-	public function setName($name)
-	{
-		$this->name = $name;
+
+
+class External
+{
+	private $collection;
+	public function __construct(){
+		$this->collection = array();
+	}
+	public function __destruct(){
+		$this->collection = null;
 	}
 	
-	public function setTel($tel)
+	public function add($obj)
 	{
-		$this->tel = $tel;
+		$this->collection[] = $obj;
+	}
+	
+    //use ExprBuilder to build up $criteria
+	public function match(Expr $criteria)
+	{		
+		return array_filter($this->collection,function($item) use ($criteria) {
+			return evaluate($criteria, $item);
+		});
 	}
 }
 
-///// Example
 $obj = new A();
-$obj->setName("htyoe");
+$obj->setName("anru");
 $obj->setTel("9870");
 
 $c = new A();
-$c->setName("wert");
+$c->setName("chen");
 $c->setTel("1234");
 
 $col = array($obj, $c);
 
 $b = new ExprBuilder();
-$ex1 = $b->eq("name","wert");
-$ex2 = $b->eq("tel","1234");
+$ex1 = $b->eq("name","anru");
+$ex2 = $b->eq("tel","9870");
 $ex3 = $b->andX($ex1,$ex2);
 
 foreach ($col as  $o) {
 	$r = evaluate($ex3, $o);
 	if ($r) {
 		var_dump($obj);
-	}
-	
+	}	
 }
