@@ -1,35 +1,89 @@
+https://sites.oxy.edu/rnaimi/home/URMsim.htm
 x + y
 
 p1 (x, y)
 init R1=x R2=y R3=0
 
-1 J(2,3,5)
-2 S(3)
-3 S(1)
-4 J(1,1,1)
+1: J(2,3,5)
+2: S(3)
+3: S(1)
+4: J(1,1,1)
 
 P2 (x)
 f(x) = x - 1 if x > 0
 f(x) = 0 if x = 0
 init R1=0 R2=x R3=0 R4=0
 
-1 T(2,4)
-2 S(4)
-3 J(2,3,8)
-4 J(2,4,8)
-5 S(3)
-6 S(4)
-7 J(1,1,4)
-8 T(3,1)
+1: T(2,4)
+2: S(4)
+3: J(2,3,8)
+4: J(2,4,8)
+5: S(3)
+6: S(4)
+7: J(1,1,4)
+8: T(3,1)
 
 P3 (x)
 f(x) = (1/2)*x if x is even
 f(x) = undefined if x is odd
 init R1=x R2=0 R3=0
 
-1 J(1,2,6)
-2 S(2)
-3 S(2)
-4 S(3)
-5 J(1,1,1)
-6 T(3,1)
+1: J(1,2,6)
+2: S(2)
+3: S(2)
+4: S(3)
+5: J(1,1,1)
+6: T(3,1)
+
+-- characterize function
+P4 (x)
+f(x) = 0 if x = 0
+f(x) = 1 if x !=0
+
+init R1=x R2=0 R3=0
+1: S(3)
+2: J(1,2,5)
+3: T(3,1)
+4: J(1,1,6)
+5: T(2,1)
+
+--constant function
+P5 (x)
+f(x) = 5
+init R1=0
+
+1: S(1)
+2: S(1)
+3: S(1)
+4: S(1)
+5: S(1)
+
+--equal function
+P6 (x,y)
+f(x,y) = 0 if x==y
+f(x,y) = 1 if x!=y
+
+init R1=x R2=y R3=0 R4=0
+1: S(4)
+2: J(1,2,4)
+3: T(4,3)
+4: T(3,1)
+
+-- characerize function
+P7 (x,y)
+f(x,y) = 0 if x<=y
+f(x,y) = 1 if x > y
+
+init R1=x R2=y R3=0 R4=0 R5=x R6=y
+1: T(1,5)
+2: T(2,6)
+3: S(4)      R4=1
+4: J(1,2,11)  =
+5: J(5,2,11)  x < y
+6: S(5)
+7: J(1,6,10)  x > y
+8: S(6)
+9: J(1,1,5)
+10: T(4,3)
+11: T(3,1)
+
