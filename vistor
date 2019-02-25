@@ -1,0 +1,182 @@
+<?php
+
+abstract class Student
+{
+	protected $vistor;
+	protected $implementedMethod;//have not used reflection
+	
+	protected $nextStudent;
+	
+	public function __construct()
+	{
+		$this->implementedMethod = [];
+	}
+	
+	public function accept(StudentVistor $v)
+	{
+		$this->vistor = $v;
+		$this->vistor->accept($this);
+		return $this->vistor;
+	}
+	
+	public function supports($methodName) : bool
+	{
+		//use array key to improve speed.
+		//array_key_exists under most of time is O(1)
+		return array_key_exists($methodName, $this->implementedMethod);
+	}
+	
+	abstract function addMethodSupport();
+	
+	//injecting method name for error processing.
+	public function nextStudent($methodName)
+	{
+		return $this->nextStudent;
+	}
+}
+
+class Id extends Student
+{
+	protected $student;
+	protected $id;
+	
+	public function __construct($id, Student $s)
+	{
+		$this->addMethodSupport();
+		$this->nextStudent = $s;
+		$this->id = $id;
+	}
+	
+	public function findId()
+	{
+		return $this->id;
+	}
+	
+	public function addMethodSupport()
+	{
+		$this->implementedMethod = ['findId' => 'findId',
+		'idAdd1' => 'idAdd1'];
+	}
+	
+	public function idAdd1()
+	{
+		$this->id += 1;
+		return $this->id;
+	}
+}
+
+class Name extends Student
+{
+	protected $name;
+	
+	public function __construct($name, Student $s)
+	{
+		$this->addMethodSupport();
+		$this->nextStudent = $s;
+		$this->name = $name;
+	}
+	
+	public function name()
+	{
+		return $this->name;
+	}
+	
+	public function addMethodSupport()
+	{
+		$this->implementedMethod = ['name' => 'name'];
+	}
+}
+
+class RegDate extends Student
+{
+	protected $date;
+	public function __construct(\DateTime $date, Student $s)
+	{
+		$this->addMethodSupport();
+		$this->nextStudent = $s;
+		$this->date = $date;
+	}
+	
+	public function regDate()
+	{
+		return $this->name;
+	}
+	
+	public function addMethodSupport()
+	{
+		$this->implementedMethod = ['regDate' => 'regDate'];
+	}
+}
+
+class StudentHolder extends Student
+{
+	public function addMethodSupport()
+	{
+		//do nothing here;
+	}
+	
+	public function nextStudent($methodName)
+	{
+		throw new \Exception($methodName . " is not supported");
+	}	 
+	
+}
+
+class StudentVistor
+{
+	protected $student;
+	
+	public function accept(Student $s)
+	{
+		$this->student = $s;
+	}
+	
+	public function findId()
+	{    
+		while ($this->student) {
+			if ($this->student->supports('findId')) {
+				return $this->student->findId();
+			} else {
+				$this->student = $this->student->nextStudent('findId');
+			}
+		}
+	}
+	
+	public function idAdd1()
+	{
+		while ($this->student) {
+			if ($this->student->supports('idAdd1')) {
+				return $this->student->idAdd1();
+			} else {
+				$this->student = $this->student->nextStudent('idAdd1');
+			}
+		}
+	}
+}
+
+class Factory 
+{
+	static public function createStudent() : StudentVistor
+	{
+		$date = new \DateTime();
+		$student = new Name("anru" , 
+					   new RegDate($date,
+						   new Id(123,
+							   new StudentHolder()
+						   )
+					   )
+		);
+		return $student->accept(new StudentVistor());
+	}
+}
+
+try {
+	$vistor = Factory::createStudent();
+	echo $vistor->findId();
+	echo "\n";
+	$vistor->idAdd1();
+	echo $vistor->findId();
+	echo "\n";
+} catch (\Exception $e) {
+	var_dump($e);
+}
