@@ -184,7 +184,6 @@ try {
 //an other one
 //---------------------------------------------
 
-<?php
 class Student
 {
 	public $id;
@@ -193,11 +192,11 @@ class Student
 
 class ID extends Student implements StuID
 {
-	public function getId(ID $s)
+	public function getId(Student $s)
 	{
 		return $s->id;
 	}
-	public function idAdd1(ID $s)
+	public function idAdd1(Student $s)
 	{
 		return $s->id + 1;
 	}
@@ -205,7 +204,7 @@ class ID extends Student implements StuID
 
 class Name extends Student implements StuName
 {
-	public function getName(ID $s)
+	public function getName(Student $s)
 	{
 		return $this->name;
 	}
@@ -232,4 +231,6 @@ interface StuName
 {
 	public function getName(ID $s);
 }
+
+
 
