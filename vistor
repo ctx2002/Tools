@@ -180,3 +180,56 @@ try {
 } catch (\Exception $e) {
 	var_dump($e);
 }
+//-------------------------------------------
+//an other one
+//---------------------------------------------
+
+<?php
+abstract class Student
+{
+	public $id;
+	public $name;
+}
+
+class ID extends Student implements StuID
+{
+	public function getId(ID $s)
+	{
+		return $s->id;
+	}
+	public function idAdd1(ID $s)
+	{
+		return $s->id + 1;
+	}
+}
+
+class Name extends Student implements StuName
+{
+	public function getName(ID $s)
+	{
+		return $this->name;
+	}
+}
+
+class StudentHolder extends Student
+{
+	public function createStudent() : Student
+	{
+		$st = new Student();
+		$st->id = new ID();
+		$st->name = new Name();
+		return $st;
+	}
+}
+
+interface StuID 
+{
+	public function getId(ID $s);
+	public function idAdd1(ID $s);
+}
+
+interface StuName 
+{
+	public function getName(ID $s);
+}
+
