@@ -7,6 +7,13 @@ Converter
 */
 
 // [ ["USD", 10], ["NZD", 5] ]
+//string to float, can be used with BC math functions
+function ParseFloat($floatString){
+    $LocaleInfo = localeconv();
+    $floatString = str_replace($LocaleInfo["mon_thousands_sep"] , "", $floatString);
+    $floatString = str_replace($LocaleInfo["mon_decimal_point"] , ".", $floatString);
+    return floatval($floatString);
+}
 
 class Money
 {
