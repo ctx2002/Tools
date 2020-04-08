@@ -1,0 +1,72 @@
+Sending / posting file
+
+Guzzle provides several methods for uploading data.
+
+You can send requests that contain a stream of data by passing a string, resource returned from fopen, or an instance of a Psr\Http\Message\StreamInterface to the body request option.
+
+// Provide the body as a string.
+$r = $client->request('POST', 'http://httpbin.org/post', [
+    'body' => 'raw data'
+]);
+
+
+// Provide an fopen resource.
+$body = fopen('/path/to/file', 'r');
+$r = $client->request('POST', 'http://httpbin.org/post', ['body' => $body]);
+// Use the stream_for() function to create a PSR-7 stream.
+$body = \GuzzleHttp\Psr7\stream_for('hello!');
+$r = $client->request('POST', 'http://httpbin.org/post', ['body' => $body]);
+
+An easy way to upload JSON data and set the appropriate header is using the json request option:
+
+$r = $client->request('PUT', 'http://httpbin.org/put', [
+    'json' => ['foo' => 'bar']
+]);
+
+
+
+
+
+
+
+
+
+
+
+POST/Form Requests
+
+Sending form fields
+Sending application/x-www-form-urlencoded POST requests requires that you specify the POST fields as an array in the form_params request options.
+
+$response = $client->request('POST', 'http://httpbin.org/post', [
+    'form_params' => [
+        'field_name' => 'abc',
+        'other_field' => '123',
+        'nested_field' => [
+            'nested' => 'hello'
+        ]
+    ]
+]);
+
+
+Sending form files
+$response = $client->request('POST', 'http://httpbin.org/post', [
+    'multipart' => [
+        [
+            'name'     => 'field_name',
+            'contents' => 'abc'
+        ],
+        [
+            'name'     => 'file_name',
+            'contents' => fopen('/path/to/file', 'r')
+        ],
+        [
+            'name'     => 'other_file',
+            'contents' => 'hello',
+            'filename' => 'filename.txt',
+            'headers'  => [
+                'X-Foo' => 'this is an extra header to include'
+            ]
+        ]
+    ]
+]);
