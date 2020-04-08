@@ -1,3 +1,4 @@
+<?php
 function loadZipFiles(string $source, string $destination): void
     {
         $zip = new ZipArchive();
