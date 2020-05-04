@@ -71,8 +71,9 @@ class SocketServer
                         /* 
                         socket_recv returns FALSE if there is no data and 0 if the socket is widowed 
                         (disconnected by remote side)
-                        ***/
                         $bytes = socket_recv($socket, $buffer, 4096, 0);
+                        ***/
+                        $bytes = socket_recv($socket, $buffer, 4096, MSG_WAITALL);
 
                         if ($bytes == 0) {
                             $index = array_search($socket, $this->currentSockets);
