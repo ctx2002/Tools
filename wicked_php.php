@@ -32,3 +32,76 @@ function base64url_decode($data, $strict = false)
   $b64 = strtr($data, '-_', '+/');
   return base64_decode($b64, $strict);
 }
+
+function prime($n)
+{
+    $end = (int)floor(sqrt($n));
+    
+	for($i = 2; $i <= $end; $i++) {
+		
+		if (($n % $i) === 0) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+/**
+@param int $start
+@return int
+**/
+function findNextPrime($start)
+{
+	$c = 1000000;
+	while($start < $c) {
+		$start++;
+        if (prime($start) === true) {
+			return $start;
+		}		
+	}
+	return 1;
+}
+
+/**
+@param int $dividend
+@param int $divisor
+@return int
+**/
+function qandr($dividend , $divisor)
+{
+	$r = gmp_div_qr((string)$dividend, (string)$divisor);
+	return [gmp_intval($r[0]), gmp_intval($r[1])];
+}
+
+/**
+@param int $n
+@return array<int>
+**/
+function factorization($n)
+{
+    $end = (int)floor(sqrt($n));
+    $start = 2;
+	$results = [];
+	while($start <= $end) {
+		
+		if (prime($n) === true) {
+		    $results[] = $n;
+            return $results;			
+		}
+		
+		list($q, $r) = qandr($n, $start);
+		
+	    if ($r !== 0) {
+			$start = findNextPrime($start);
+		    if ($start === 1) {
+				return [];
+			}
+		} else {
+		    $results[] = $start;
+            $n = $q;			
+		}		
+	}
+	
+	return $results;
+}
+
