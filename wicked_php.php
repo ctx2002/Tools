@@ -105,3 +105,57 @@ function factorization($n)
 	return $results;
 }
 
+//a quick function to calculate C(n,k)
+//see element of number theory , David M Burton, problem 1.2.(b) 
+function choose_o($n, $k)
+{
+    if ($n < 0 || $k < 0) {
+		return 0;
+	}
+	
+	if ($n == 1) {
+		return 1;
+	}
+	
+	if ($k == 0) {
+		return 1;
+	}
+	
+	if ($n == $k) {
+		return 1;
+	}
+	
+	if ($n - $k < $k) {
+		$k = $n - $k;
+	}
+
+    $para = [];
+	$choose2 = [];
+	
+	$para[]  =  ['n' => $n - 1, 'c' => $k]; //split
+    $choose2[] = ['n' => $n - 1, 'c' => $k - 1]; //split
+    
+	$sum = 0;
+    while(true) {
+		
+	    $item = array_pop($choose2);
+        $n = $item['n'];
+		$k = $item['c'];
+		
+		if ($k == 1) {
+			$sum += $n;
+			while(count($para) > 0) {
+			    $oldc = array_pop($para);
+			    $f = ($oldc['n'] - $oldc['c'] + 1 ) / $oldc['c'];
+	            $temp = ($f * $sum);
+			    $sum = $sum + $temp;
+			}
+			break;
+		} else {
+			$para[] = ['n' => $n - 1, 'c' => $k];
+			$choose2[] = ['n' => $n - 1, 'c' => $k - 1];	
+		}    	
+	}
+    return $sum;	
+}
+
