@@ -106,7 +106,7 @@ function factorization($n)
 }
 
 //a quick function to calculate C(n,k)
-//see element of number theory , David M Burton, problem 1.2.(b) 
+//see elementary of number theory , David M Burton, problem 1.2.(b) 
 function choose_o($n, $k)
 {
     if ($n < 0 || $k < 0) {
