@@ -159,3 +159,53 @@ function choose_o($n, $k)
     return $sum;	
 }
 
+//Extended Euclidean algorithm
+//return [gcd, x0, y0]
+//solve equation ax + by = c
+function ext_gcd($a, $b, $c)
+{
+	$asign = 1;
+	$bsign = 1;
+	if ($a < 0) {
+		$asign = -1;
+	}
+	
+	if ($b < 0) {
+		$bsign = -1;
+	}
+	
+	$r0 = abs($a);
+	$r1 = abs($b);
+	
+	$m0 = 1;
+	$n0 = 0;
+	
+	$m1 = 0;
+	$n1 = 1;
+	
+	
+	while (($remainer = ($r0 % $r1)) !== 0) {
+	    $quotion = floor($r0 / $r1);
+
+        $r0 = $r1;
+        $r1 = $remainer;
+
+        
+		$mtemp = $m0 - $m1*$quotion;
+		$m0 = $m1;
+		$m1 = $mtemp;
+
+        $ntemp = $n0 - $n1*$quotion;
+        $n0 = $n1;
+		$n1 = $ntemp;		
+	}
+	
+	if ($c % $r1 !== 0) {
+		throw new Exception('no integer solution,('.$a.', '.$b.') is not a factor of '.$c);
+	}
+	
+	$multipler = $c / $r1;
+	
+	return [$r1, $m1*$asign*$multipler, $n1*$bsign*$multipler];
+}
+
