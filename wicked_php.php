@@ -209,3 +209,24 @@ function ext_gcd($a, $b, $c)
 	return [$r1, $m1*$asign*$multipler, $n1*$bsign*$multipler];
 }
 
+//sub set
+/*
+$set = [1, 2, 3, 4];
+$result = [];
+$output = [];
+subset($set, $result, count($set), $output);
+*/
+function subset($set, $result, $len, &$output)
+{
+    if ($len === 0) {
+        $output[] = $result;
+        return $result;
+    }
+
+    subset($set, $result, $len - 1, $output);
+    $e = $set[$len - 1];
+    $result[]= $e;
+
+    subset($set, $result, $len - 1, $output);
+}
+
