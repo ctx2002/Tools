@@ -1,8 +1,5 @@
 <?php
 
-use ArrayAccess;
-use Iterator;
-
 /**
  * @implements Iterator<string>
  * @implements ArrayAccess<int, string>
@@ -145,6 +142,11 @@ class UTF8String implements Iterator, ArrayAccess
      */
     public function offsetExists($offset): bool
     {
+        if ($this->textLen > 0) {
+            //we know string length
+            return $offset >= 0 && $offset < $this->textLen;
+        }
+
         $pre = $offset - 1;
         $localIndex = 0;
         while ($pre >= 0) {
@@ -167,6 +169,7 @@ class UTF8String implements Iterator, ArrayAccess
                 return false;
             }
             --$charLen;
+            ++$localIndex;
         }
 
         return true;
