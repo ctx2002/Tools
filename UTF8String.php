@@ -1,5 +1,8 @@
 <?php
 
+use ArrayAccess;
+use Iterator;
+
 /**
  * @implements Iterator<string>
  * @implements ArrayAccess<int, string>
@@ -194,36 +197,68 @@ class UTF8String implements Iterator, ArrayAccess
             --$pre;
         }
 
-        $char = $this->text[$localIndex];
-        $charLen = $this->charCodeLength($char);
-
         $str = "";
-        while ($charLen > 0) {
-            --$charLen;
-            $str .= $this->text[$localIndex];
-            ++$localIndex;
-        }
+        if (isset($this->text[$localIndex]) === true) {
+            $char = $this->text[$localIndex];
+            $charLen = $this->charCodeLength($char);
 
+            while ($charLen > 0) {
+                --$charLen;
+                $str .= $this->text[$localIndex];
+                ++$localIndex;
+            }
+        }
         return $str;
     }
 
     /**
      * @param int    $offset
      * @param string $value
-     * @return void
+     * @return UTF8String
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet($offset, $value): UTF8String
     {
-        throw new \RuntimeException("this method is not been implemented.");
+        $str = "";
+        $pre = $offset - 1;
+        $localIndex = 0;
+
+        while ($pre >= 0 && isset($this->text[$localIndex]) === true) {
+            $char = $this->text[$localIndex];
+            $charLen = $this->charCodeLength($char);
+            while ($charLen > 0) {
+                --$charLen;
+                $str .= $this->text[$localIndex];
+                $localIndex++;
+            }
+            --$pre;
+        }//previous bytes copied
+
+        if (isset($this->text[$localIndex]) === true) {
+            $char = $this->text[$localIndex];
+            $charLen = $this->charCodeLength($char);
+            while ($charLen > 0) {
+                --$charLen;
+                ++$localIndex;
+            }
+        }//index passed old char
+
+        $str .= $value;
+
+        while (isset($this->text[$localIndex]) === true) {
+            $str .= $this->text[$localIndex];
+            ++$localIndex;
+        }
+
+        return new UTF8String($str);
     }
 
     /**
      * @param int $offset
-     * @return void
+     * @return UTF8String
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset($offset): UTF8String
     {
-        throw new \RuntimeException("this method is not been implemented.");
+        return $this->offsetSet($offset, "");
     }
 
     /**
