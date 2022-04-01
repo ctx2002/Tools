@@ -2,12 +2,13 @@
 
 use ArrayAccess;
 use Iterator;
+use Stringable;
 
 /**
  * @implements Iterator<string>
  * @implements ArrayAccess<int, string>
  */
-class UTF8String implements Iterator, ArrayAccess
+class UTF8String implements Iterator, ArrayAccess, Stringable
 {
     /**
      * @var string
@@ -77,7 +78,6 @@ class UTF8String implements Iterator, ArrayAccess
             $this->utf8Char .= $this->text[$this->index];
             $this->index++;
         }
-
         ++$this->charCounter;
     }
 
@@ -276,15 +276,38 @@ class UTF8String implements Iterator, ArrayAccess
         while (isset($this->text[$localIndex]) === true) {
             $char = $this->text[$localIndex];
             $byteLen = $this->charCodeLength($char);
-
-            while ($byteLen > 0) {
-                --$byteLen;
-                $localIndex++;
-            }
-            ++$localCharCounter;
+            $localCharCounter += $byteLen;
         }
 
         $this->textLen = $localCharCounter;
         return $this->textLen;
+    }
+
+    /**
+     * peek length of char from current char position
+     * **/
+    public function peek(int $length): string
+    {
+        $str = "";
+        $localIndex = $this->index;
+        while ($length > 0 && isset($this->text[$localIndex]) === true) {
+            $char = $this->text[$localIndex];
+            $byteLen = $this->charCodeLength($char);
+            while ($byteLen > 0 && isset($this->text[$localIndex]) === true) {
+                --$byteLen;
+                $str .= $this->text[$localIndex++];
+            }
+            --$length;
+        }
+
+        return $str;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->text;
     }
 }
