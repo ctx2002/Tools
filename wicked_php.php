@@ -230,3 +230,53 @@ function subset($set, $result, $len, &$output)
     subset($set, $result, $len - 1, $output);
 }
 
+//permutation  with repetition
+function per($size, $elements, $initContainer)
+{
+    while (true) {
+        if ($size === 0) {
+            return $initContainer;
+        }
+        $cont = [];
+        foreach ($elements as $item) {
+            foreach ($initContainer as $bag) {
+                $bag[] = $item;
+                $cont[] = $bag;
+            }
+        }
+        $size -= 1;
+        $initContainer = $cont;
+    }
+    //return per($size - 1, $elements, $cont);
+}
+
+//permutation  without repetition
+function per_without($size, $elements, $initContainer)
+{
+    $temp = [];
+    $oldSize = $size;
+    while (true) {
+        if ($size === 0) {
+            return $temp;
+        }
+        $cont = [];
+        foreach ($elements as $item) {
+            foreach ($initContainer as $bag) {
+                $index = array_search($item, $bag);
+                if ($index === false) { //avoid repetion
+                    $bag[] = $item;
+                }
+
+                if (count($bag) === $oldSize) {
+                    $temp[] = $bag;
+                }
+                $cont[] = $bag;
+            }
+        }
+        $size -= 1;
+        $initContainer = $cont;
+    }
+}
+
+//$c = per(3, [1, 2, 3, 4, 5, 6], [[]]);
+$v = per_without(4, [1,2,3,4], [[]]);
